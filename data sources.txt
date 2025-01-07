@@ -1,0 +1,6 @@
+https://www.kaggle.com/datasets/muftirestumahesa/image-obstacle-in-public-spaces
+https://www.kaggle.com/datasets/thepbordin/indoor-object-detection
+https://www.kaggle.com/datasets/nderalparslan/dwsonder
+https://huggingface.co/datasets/HoaAn2003/Object-Detection-Dataset
+https://www.kaggle.com/datasets/mohamedgobara/26-class-object-detection-dataset
+http://host.robots.ox.ac.uk/pascal/VOC/voc2007/index.html
