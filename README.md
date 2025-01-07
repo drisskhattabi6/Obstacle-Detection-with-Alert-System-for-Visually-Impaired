@@ -18,11 +18,10 @@ This project introduces a robust solution to assist visually impaired individual
 
 ### Prerequisites  
 Ensure you have the following installed on your system:  
-- Python 3.8+  
+- Python 3.8+ with pip (Python package manager)  
+- NPM (package manager) 
 - Node.js and Node-RED  
-- pip (Python package manager)  
 - Flask  
-- Required Python libraries (see `requirements.txt`)  
 
 ---
 
@@ -30,8 +29,8 @@ Ensure you have the following installed on your system:
 
 1. **Clone the Repository**  
    ```bash  
-   git clone https://github.com/yourusername/obstacle-detection-alert-system.git  
-   cd obstacle-detection-alert-system  
+   git clone https://github.com/drisskhattabi6/Obstacle-Detection-with-Alert-System-for-the-Visually-Impaired.git  
+   cd Obstacle-Detection-with-Alert-System-for-the-Visually-Impaired 
    ```  
 
 2. **Install Dependencies**  
@@ -56,7 +55,7 @@ The Flask API serves as the backend for processing images and returning obstacle
    ```  
 2. Start the Flask server:  
    ```bash  
-   python app.py  
+   python main.py  
    ```  
 3. The API will start running at `http://127.0.0.1:5000`.  
 
@@ -75,9 +74,9 @@ The Node-RED flow is responsible for integrating the API predictions with the al
    node-red  
    ```  
 3. Open the Node-RED interface at `http://127.0.0.1:1880`.  
-4. Import the provided Node-RED flow file (`node-red-flow.json`) into Node-RED.  
+4. Import the provided Node-RED flow file (`Node-Red-flows.json`) into Node-RED.  
    - Click on the menu (top-right corner) → "Import" → "Clipboard".  
-   - Paste the content of `node-red-flow.json` and deploy the flow.  
+   - Paste the content of `Node-Red-flows.json` and deploy the flow.  
 5. Ensure that the Node-RED flow triggers the Flask API and processes responses for the audio alerts.  
 
 ---
@@ -95,12 +94,10 @@ The alert system triggers audio notifications based on the API's predictions.
 ```plaintext  
 obstacle-detection-alert-system/  
 ├── api/  
-│   ├── app.py            # Flask API for predictions  
-│   ├── models/           # Pretrained MobileNetV2 and CNN models  
-│   └── requirements.txt  # Python dependencies  
-├── node-red-flow.json    # Node-RED flow configuration  
-├── data/  
-│   └── dataset/          # Custom obstacle classification dataset  
+│   ├── main.py            # Flask API for predictions  
+│   ├── Fine-Tuned MobileNetV2 model
+├── Node-Red-flows.json    # Node-RED flow configuration  
+├── data sources.txt         # Custom obstacle classification dataset  
 └── README.md             # Project documentation  
 ```  
 
