@@ -12,6 +12,31 @@ This project introduces a robust solution to assist visually impaired individual
 - Real-time alerts through audio guidance for identified obstacles.  
 - Flask API for model prediction and integration with Node-RED for automation.  
 
+## Dataset Description
+
+The dataset is a **custom-built collection** created by merging several publicly available datasets and scraping additional images of common obstacles to ensure comprehensive coverage of real-world scenarios. It includes **10 distinct classes**, each representing a type of obstacle frequently encountered by visually impaired individuals. 
+
+#### Classes:
+1. **Chair**
+2. **Door**
+3. **Fence**
+4. **Garbage Bin**
+5. **Obstacle** (e.g., pole, traffic cone, fire hydrant)
+6. **Plant**
+7. **Pothole**
+8. **Stairs**
+9. **Table**
+10. **Vehicle**
+
+Class Distribution in Training set : 
+![Class Distribution in Training set](imgs/training-hist.png)
+
+Class Distribution in Testing set : 
+![Class Distribution in Testing set](imgs/testing-hist.png)
+
+
+This is the obstacles dataset used in the project : [Dataset Link](https://www.kaggle.com/datasets/idrisskh/obstacles-dataset/)
+
 ---
 
 ## Getting Started  
@@ -25,25 +50,13 @@ Ensure you have the following installed on your system:
 
 ---
 
-### Installation  
-
-1. **Clone the Repository**  
-   ```bash  
-   git clone https://github.com/drisskhattabi6/Obstacle-Detection-with-Alert-System-for-the-Visually-Impaired.git  
-   cd Obstacle-Detection-with-Alert-System-for-the-Visually-Impaired 
-   ```  
-
-2. **Install Dependencies**  
-   ```bash  
-   pip install -r requirements.txt  
-   ```  
-
-3. **Download Pretrained Model**  
-   - Download the MobileNetV2 pretrained model from [link-to-model] and place it in the `models` directory.  
-
----
-
 ## Running the System  
+
+### Clone the Repository  
+   ```bash  
+   git clone https://github.com/drisskhattabi6/Obstacle-Detection-with-Alert-System-for-Visually-Impaired.git  
+   cd Obstacle-Detection-with-Alert-System-for-Visually-Impaired 
+   ```  
 
 ### 1. Running the Flask API  
 The Flask API serves as the backend for processing images and returning obstacle classifications.  
@@ -74,10 +87,14 @@ The Node-RED flow is responsible for integrating the API predictions with the al
    node-red  
    ```  
 3. Open the Node-RED interface at `http://127.0.0.1:1880`.  
+3. Open the Node-RED dashboard at `http://127.0.0.1:1880/ui`.  
 4. Import the provided Node-RED flow file (`Node-Red-flows.json`) into Node-RED.  
    - Click on the menu (top-right corner) → "Import" → "Clipboard".  
    - Paste the content of `Node-Red-flows.json` and deploy the flow.  
 5. Ensure that the Node-RED flow triggers the Flask API and processes responses for the audio alerts.  
+
+**⚠️ Warning:**
+##### you will need to download some flows from pallet manager in Node-Red
 
 ---
 
@@ -93,12 +110,19 @@ The alert system triggers audio notifications based on the API's predictions.
 ## Project Structure  
 ```plaintext  
 obstacle-detection-alert-system/  
+├── imgs/  
+├── Obstacles Imgs Example/  
 ├── api/  
-│   ├── main.py            # Flask API for predictions  
+│   ├── main.py            # Flask API for predictions 
 │   ├── Fine-Tuned MobileNetV2 model
-├── Node-Red-flows.json    # Node-RED flow configuration  
-├── data sources.txt         # Custom obstacle classification dataset  
-└── README.md             # Project documentation  
+├── obstacles detecting for video using Python/  
+│   ├── predict_video.py     
+│   ├── vid1.mp4
+│   ├── vid2.mp4
+│   ├── vid3.mp4
+├── Node-Red-flows.json    # Node-RED flow configuration 
+├── Research Paper.pd      # Research Paper
+└── README.md              # Project documentation 
 ```  
 
 ---
@@ -110,8 +134,12 @@ obstacle-detection-alert-system/
 
 ---
 
-## License  
-This project is licensed under the MIT License. See the `LICENSE` file for details.  
+## Realized by : 
+- Khattabi Idriss
+- Boufarhi Ayman 
 
-## Acknowledgments  
-Special thanks to the contributors and the Kaggle community for providing datasets and resources that made this project possible.  
+Under the supervsion of **Mr.Faouzi TAYALATI**
+
+This was a 'Deep Learning and Transfer Learning' Module Project
+Master of AI and Data Sceince 
+FST Tanger - Morocco
