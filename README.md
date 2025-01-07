@@ -16,6 +16,10 @@ This project introduces a robust solution to assist visually impaired individual
 
 The dataset is a **custom-built collection** created by merging several publicly available datasets and scraping additional images of common obstacles to ensure comprehensive coverage of real-world scenarios. It includes **10 distinct classes**, each representing a type of obstacle frequently encountered by visually impaired individuals. 
 
+Those some image from the dataset : 
+![](imgs/img1.png)
+![](imgs/img2.png)
+
 #### Classes:
 1. **Chair**
 2. **Door**
@@ -93,8 +97,7 @@ The Node-RED flow is responsible for integrating the API predictions with the al
    - Paste the content of `Node-Red-flows.json` and deploy the flow.  
 5. Ensure that the Node-RED flow triggers the Flask API and processes responses for the audio alerts.  
 
-**⚠️ Warning:**
-##### you will need to download some flows from pallet manager in Node-Red
+**⚠️ Warning:** you will need to download some flows from pallet manager in Node-Red
 
 ---
 
@@ -121,25 +124,31 @@ obstacle-detection-alert-system/
 │   ├── vid2.mp4
 │   ├── vid3.mp4
 ├── Node-Red-flows.json    # Node-RED flow configuration 
-├── Research Paper.pd      # Research Paper
+├── Research Paper.pdf     # Research Paper
 └── README.md              # Project documentation 
 ```  
 
 ---
 
 ## References  
-1. Mark Sandler et al., *MobileNetV2: Inverted Residuals and Linear Bottlenecks*.  
-2. Node-RED Documentation, [Node-RED Official Site](https://nodered.org/docs/).  
-3. Shorten, Connor, et al., *A Survey on Image Data Augmentation for Deep Learning*.  
+1. Mark Sandler Andrew Howard Menglong Zhu Andrey Zhmoginov Liang-Chieh Chen. MobileNetV2: Inverted Residuals and Linear Bottlenecks. Google Inc
+2. Yahia Said, Mohamed Atri, Marwan Ali Albahar, Ahmed Ben Atitallah and Yazan Ahmad Alsariera: Obstacle Detection System for Navigation Assistance of Visually Impaired People Based on Deep Learning Techniques
+3. O’Shea, Keiron, and Ryan Nash. An Introduction to Convolutional Neural Networks. arXiv preprint arXiv:1511.08458, 2015.
+4. Simonyan, Karen, and Andrew Zisserman. Very Deep Convolutional Networks for Large-Scale Image Recognition. arXiv preprint arXiv:1409.1556, 2014.
+5. What is MobileNetV2?, Analytics Vidhya  https://www.analyticsvidhya.com/blog/2023/12/what-is-mobilenetv2 
+6. Node-RED Documentation. https://nodered.org/docs/ 
+7. Albawi, Saad, et al. Understanding of a Convolutional Neural Network. Proceedings of 2017 International Conference on Engineering and Technology (ICET), IEEE, 2017.
+8. Deng, Jia, et al. ImageNet: A Large-Scale Hierarchical Image Database. Proceedings of the 2009 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), IEEE, 2009.
+9. Shorten, Connor, and Taghi M. Khoshgoftaar. A Survey on Image Data Augmentation for Deep Learning. Journal of Big Data, 6(1), 2019. 
 
 ---
 
-## Realized by : 
-- Khattabi Idriss
-- Boufarhi Ayman 
+## Realized by: 
+- **Khattabi Idriss**
+- **Boufarhi Ayman**
 
-Under the supervsion of **Mr.Faouzi TAYALATI**
+Under the supervision of **Mr. Faouzi TAYALATI**
 
-This was a 'Deep Learning and Transfer Learning' Module Project
-Master of AI and Data Sceince 
+This was a *Deep Learning and Transfer Learning* Module Project - Master of AI and Data Sceince 
+
 FST Tanger - Morocco
