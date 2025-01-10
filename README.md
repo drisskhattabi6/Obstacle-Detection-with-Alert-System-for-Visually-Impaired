@@ -93,7 +93,7 @@ The Node-RED flow is responsible for integrating the API predictions with the al
    ```
 
 2. **Launch Node-RED**:
-
+   Run Node-red in 'python obstacle detecting' Folder to be able to use videos and images
    ```bash
    node-red
    ```
@@ -196,11 +196,14 @@ Ensure that the Node-RED flow triggers the **Flask API** and processes responses
 ![Node-Red-flows](imgs/node-red-arch.png)
 
 
+**Warning :** 
+- Run Node-red in 'python obstacle detecting' Folder to be able to use videos and images, 
+- if you want to change the image to predict, go to inject image node, double click, change the path of the image
+- if you want to change the video to predict, go to Start FFmpeg node, double click, chnage the path of the video : "'-i', 'vid1.mp4'"
+
 ---
 
-this is the content of the flow : 
-
-This is your updated Node-RED flow. Here’s a quick breakdown of how it works:
+### This is the content of the flow : 
 
 1. **Inject Image**: The flow begins with an image being injected (`inject image`), which will load an image (`imgs/img1.jpg`) and pass it to the `Load image` node.
 
@@ -269,6 +272,8 @@ CNN Architucture :
 
 MobileNetV2 Architucture  : 
 ![](imgs/image-150.webp)
+
+- To run the audio while predicting, the Node-RED dashboard (`http://127.0.0.1:1880/ui`) must be opened, and Item like button must be added to open the dashboard
 
 ---
 

@@ -43,7 +43,7 @@
         "encoding": "utf8",
         "allProps": false,
         "x": 290,
-        "y": 300,
+        "y": 280,
         "wires": [
             [
                 "a1b5e175fb44a627"
@@ -63,7 +63,7 @@
         "finalize": "",
         "libs": [],
         "x": 480,
-        "y": 300,
+        "y": 280,
         "wires": [
             [
                 "4c6d5c8b5dedfe1e"
@@ -75,7 +75,7 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "get predicted_class",
-        "func": "\nif (msg.payload.predicted_class && msg.payload.predicted_probability > 0.8) {\n    msg.payload = `A '${msg.payload.predicted_class}' Has Been Detected !!`;\n} else {\n    msg.payload = \"No object detected or probability is too low.\";\n}\n\nreturn msg;\n",
+        "func": "\nif (msg.payload.predicted_class ) {\n    msg.payload = `A '${msg.payload.predicted_class}' Has Been Detected !!`;\n} else if (msg.payload.predicted_probability > 0.8) {\n    msg.payload = `probability is low the 0.8 !!`;\n} else {\n    msg.payload = \"No object detected!!\";\n}\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -83,11 +83,11 @@
         "finalize": "",
         "libs": [],
         "x": 250,
-        "y": 460,
+        "y": 420,
         "wires": [
             [
                 "be773dfa3d42a653",
-                "f6236e0699dc11ac"
+                "deb5d6cf655a754f"
             ]
         ]
     },
@@ -105,19 +105,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 510,
-        "y": 440,
-        "wires": []
-    },
-    {
-        "id": "f6236e0699dc11ac",
-        "type": "ui_audio",
-        "z": "f6f2187d.f17ca8",
-        "name": "play audio",
-        "group": "bdf78bf70c72e674",
-        "voice": "Microsoft David - English (United States)",
-        "always": false,
-        "x": 510,
-        "y": 500,
+        "y": 400,
         "wires": []
     },
     {
@@ -142,7 +130,7 @@
         "payload": "{}",
         "payloadType": "json",
         "x": 130,
-        "y": 200,
+        "y": 220,
         "wires": [
             [
                 "fd3ca02bfd42ae55"
@@ -175,7 +163,7 @@
         "type": "function",
         "z": "f6f2187d.f17ca8",
         "name": "Frame Processor",
-        "func": "// Frame Processor Function\nif (msg.topic.endsWith('/stdout')) {\n    // Check for JPEG magic numbers (FF D8 FF)\n    const isJPEG = msg.payload.length > 3 && \n                   msg.payload[0] === 0xFF && \n                   msg.payload[1] === 0xD8 && \n                   msg.payload[2] === 0xFF;\n    \n    // Process only valid JPEG frames\n    if (isJPEG && msg.payload.length > 10000) {  // Minimum size threshold\n        msg.headers = {\n            \"Content-Type\": \"multipart/form-data\"\n        };\n        \n        msg.payload = {\n            image: {\n                value: msg.payload,\n                options: { \n                    filename: 'image.jpg',\n                    contentType: 'image/jpeg'\n                }\n            }\n        };\n        \n        //node.warn(`Processing valid JPEG frame of size: ${msg.payload.image.value.length}`);\n        return msg;\n    } else {\n        // Skip invalid frames\n        node.warn(`Skipping invalid frame of size: ${msg.payload.length}`);\n        return null;\n    }\n} else if (msg.topic.endsWith('/status')) {\n    node.warn(`FFmpeg Status: ${JSON.stringify(msg.payload)}`);\n    return null;\n}",
+        "func": "// Frame Processor Function\nif (msg.topic.endsWith('/stdout')) {\n    // Check for JPEG magic numbers (FF D8 FF)\n    const isJPEG = msg.payload.length > 3 && \n                   msg.payload[0] === 0xFF && \n                   msg.payload[1] === 0xD8 && \n                   msg.payload[2] === 0xFF;\n    \n    // Process only valid JPEG frames\n    if (isJPEG && msg.payload.length > 10000) {  // Minimum size threshold\n        msg.headers = {\n            \"Content-Type\": \"multipart/form-data\"\n        };\n        \n        msg.payload = {\n            image: {\n                value: msg.payload,\n                options: { \n                    filename: 'image.jpg',\n                    contentType: 'image/jpeg'\n                }\n            }\n        };\n        \n        return msg;\n    } else {\n        node.warn(`Skipping invalid frame of size: ${msg.payload.length}`);\n        return null;\n    }\n} else if (msg.topic.endsWith('/status')) {\n    node.warn(`FFmpeg Status: ${JSON.stringify(msg.payload)}`);\n    return null;\n}",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -209,10 +197,10 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "image-input",
-        "payload": "imgs/img1.jpg",
+        "payload": "imgs/img5.jpg",
         "payloadType": "str",
         "x": 130,
-        "y": 300,
+        "y": 280,
         "wires": [
             [
                 "3a846992bb4c685a"
@@ -232,7 +220,7 @@
         "finalize": "",
         "libs": [],
         "x": 300,
-        "y": 200,
+        "y": 220,
         "wires": [
             [
                 "bbc56d234fca8d20"
@@ -273,8 +261,8 @@
         "topic": "",
         "payload": "{}",
         "payloadType": "json",
-        "x": 140,
-        "y": 100,
+        "x": 120,
+        "y": 120,
         "wires": [
             [
                 "b85eaf39d92fd577"
@@ -294,10 +282,50 @@
         "finalize": "",
         "libs": [],
         "x": 300,
-        "y": 100,
+        "y": 120,
         "wires": [
             [
                 "bbc56d234fca8d20"
+            ]
+        ]
+    },
+    {
+        "id": "deb5d6cf655a754f",
+        "type": "ui_audio",
+        "z": "f6f2187d.f17ca8",
+        "name": "play audio",
+        "group": "bdf78bf70c72e674",
+        "voice": "Microsoft David - English (United States)",
+        "always": "",
+        "x": 510,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "46acc2420b778c31",
+        "type": "ui_button",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "group": "bdf78bf70c72e674",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "button",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 110,
+        "y": 60,
+        "wires": [
+            [
+                "b85eaf39d92fd577"
             ]
         ]
     },
