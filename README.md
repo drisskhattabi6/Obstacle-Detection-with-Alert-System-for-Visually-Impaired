@@ -7,6 +7,8 @@ This project introduces a robust solution to assist visually impaired individual
 - **Deep Learning Models**: A Convolutional Neural Network (CNN) trained from scratch and fine-tuned MobileNetV2 for obstacle classification.  
 - **Alert System**: Real-time audio feedback using Node-RED, integrated with a Flask API to process predictions.  
 
+**Read The Scientific Paper to know more.**
+
 ## Features  
 - Custom-trained deep learning models for obstacle classification.  
 - Real-time alerts through audio guidance for identified obstacles.  
@@ -259,6 +261,14 @@ For image :
 
 For Video : 
 ![](imgs/predict-vid.png)
+
+- Notebooks Folder, Contains How I train the CNN from Scratch, and How I Fine-tune MobileNetV2 :
+
+CNN Architucture : 
+![](imgs/CNN-Flowchart.png)
+
+MobileNetV2 Architucture  : 
+![](imgs/image-150.webp)
 
 ---
 
