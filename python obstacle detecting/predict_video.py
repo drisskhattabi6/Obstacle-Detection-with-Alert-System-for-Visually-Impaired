@@ -1,13 +1,39 @@
 import cv2
 import requests
-import io
-from PIL import Image
 
 # API URL
 API_URL = "http://127.0.0.1:5000/predict"
 
-# Video file path
-VIDEO_PATH = "vid3.mp4"
+VIDEO_PATH = None
+vids = """
+    1. vid1.mp4
+    2. vid2.mp4
+    3. vid3.mp4
+"""
+
+# Enter Video file path 
+while True:
+    try:
+        print(vids)
+        nbr = int(input("Choose video number to detect obstacls : "))
+        if nbr == 1:
+            VIDEO_PATH = "vid1.mp4"
+        elif nbr == 2:
+            VIDEO_PATH = "vid2.mp4"
+        elif nbr == 3:
+            VIDEO_PATH = "vid3.mp4"
+        else:
+            print("Please enter a valid number.")
+            continue
+
+        video = cv2.VideoCapture(VIDEO_PATH)
+        if not video.isOpened():
+            print("Error: Unable to open video file.")
+        else:
+            break
+    except Exception as e:
+        print(f"Error: {e}")
+
 def extract_and_predict_frames(video_path, api_url, interval=2):
     """
     Extract frames from the video at the specified interval (in seconds)
@@ -20,16 +46,15 @@ def extract_and_predict_frames(video_path, api_url, interval=2):
     """
     # Open the video file
     video = cv2.VideoCapture(video_path)
-
     if not video.isOpened():
         print("Error: Unable to open video file.")
         return
 
     # Get video frame rate and calculate interval in terms of frames
     fps = video.get(cv2.CAP_PROP_FPS)
-    frame_interval = int(fps * interval)  # Frames to skip for the given time interval
+    frame_interval = int(fps * interval)
 
-    frame_count = 0  # To track the frame number
+    frame_count = 0 
     success, frame = video.read()
 
     while success:
@@ -50,7 +75,6 @@ def extract_and_predict_frames(video_path, api_url, interval=2):
                     response_data = response.json()
 
                     if response_data['predicted_probability'] > 0.8 :
-                        # Print the prediction result with elapsed seconds
                         print(f"Time {elapsed_seconds:.2f} seconds prediction:", response_data)
 
                 except Exception as e:
@@ -64,5 +88,4 @@ def extract_and_predict_frames(video_path, api_url, interval=2):
     video.release()
     print("Processing completed.")
 
-# Run the function
 extract_and_predict_frames(VIDEO_PATH, API_URL)

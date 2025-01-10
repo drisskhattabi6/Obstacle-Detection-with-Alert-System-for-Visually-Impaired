@@ -7,6 +7,301 @@
         "info": ""
     },
     {
+        "id": "4c6d5c8b5dedfe1e",
+        "type": "http request",
+        "z": "f6f2187d.f17ca8",
+        "name": "predict obstacle",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:5000/predict",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 680,
+        "y": 280,
+        "wires": [
+            [
+                "ade905f8e53e0cb7"
+            ]
+        ]
+    },
+    {
+        "id": "3a846992bb4c685a",
+        "type": "file in",
+        "z": "f6f2187d.f17ca8",
+        "name": "Load image",
+        "filename": "payload",
+        "filenameType": "msg",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 290,
+        "y": 300,
+        "wires": [
+            [
+                "a1b5e175fb44a627"
+            ]
+        ]
+    },
+    {
+        "id": "a1b5e175fb44a627",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "convert the img",
+        "func": "msg.headers = {\n    \"Content-Type\": \"multipart/form-data\"\n};\nmsg.payload = {\n    image: {\n        value: Buffer.from(msg.payload, 'base64'),\n        options : { \n            filename: 'image.jpg',\n            contentType: 'image/jpeg'\n        }\n    }\n};\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 300,
+        "wires": [
+            [
+                "4c6d5c8b5dedfe1e"
+            ]
+        ]
+    },
+    {
+        "id": "ade905f8e53e0cb7",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "get predicted_class",
+        "func": "\nif (msg.payload.predicted_class && msg.payload.predicted_probability > 0.8) {\n    msg.payload = `A '${msg.payload.predicted_class}' Has Been Detected !!`;\n} else {\n    msg.payload = \"No object detected or probability is too low.\";\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 460,
+        "wires": [
+            [
+                "be773dfa3d42a653",
+                "f6236e0699dc11ac"
+            ]
+        ]
+    },
+    {
+        "id": "be773dfa3d42a653",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "predicted class",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 510,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "f6236e0699dc11ac",
+        "type": "ui_audio",
+        "z": "f6f2187d.f17ca8",
+        "name": "play audio",
+        "group": "bdf78bf70c72e674",
+        "voice": "Microsoft David - English (United States)",
+        "always": false,
+        "x": 510,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "74e4feb39b0245fb",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "Inject Video",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "video-input",
+        "payload": "{}",
+        "payloadType": "json",
+        "x": 130,
+        "y": 200,
+        "wires": [
+            [
+                "fd3ca02bfd42ae55"
+            ]
+        ]
+    },
+    {
+        "id": "bbc56d234fca8d20",
+        "type": "ffmpeg",
+        "z": "f6f2187d.f17ca8",
+        "name": "process video",
+        "outputs": 2,
+        "cmdPath": "",
+        "cmdArgs": "[]",
+        "cmdOutputs": 1,
+        "killSignal": "SIGHUP",
+        "x": 500,
+        "y": 160,
+        "wires": [
+            [
+                "a5883f10aab01815"
+            ],
+            [
+                "2d5f4c78373e37b7"
+            ]
+        ]
+    },
+    {
+        "id": "2d5f4c78373e37b7",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Frame Processor",
+        "func": "// Frame Processor Function\nif (msg.topic.endsWith('/stdout')) {\n    // Check for JPEG magic numbers (FF D8 FF)\n    const isJPEG = msg.payload.length > 3 && \n                   msg.payload[0] === 0xFF && \n                   msg.payload[1] === 0xD8 && \n                   msg.payload[2] === 0xFF;\n    \n    // Process only valid JPEG frames\n    if (isJPEG && msg.payload.length > 10000) {  // Minimum size threshold\n        msg.headers = {\n            \"Content-Type\": \"multipart/form-data\"\n        };\n        \n        msg.payload = {\n            image: {\n                value: msg.payload,\n                options: { \n                    filename: 'image.jpg',\n                    contentType: 'image/jpeg'\n                }\n            }\n        };\n        \n        //node.warn(`Processing valid JPEG frame of size: ${msg.payload.image.value.length}`);\n        return msg;\n    } else {\n        // Skip invalid frames\n        node.warn(`Skipping invalid frame of size: ${msg.payload.length}`);\n        return null;\n    }\n} else if (msg.topic.endsWith('/status')) {\n    node.warn(`FFmpeg Status: ${JSON.stringify(msg.payload)}`);\n    return null;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 200,
+        "wires": [
+            [
+                "4c6d5c8b5dedfe1e"
+            ]
+        ]
+    },
+    {
+        "id": "8011ddde9bbb75f0",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "inject image",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "image-input",
+        "payload": "imgs/img1.jpg",
+        "payloadType": "str",
+        "x": 130,
+        "y": 300,
+        "wires": [
+            [
+                "3a846992bb4c685a"
+            ]
+        ]
+    },
+    {
+        "id": "fd3ca02bfd42ae55",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Start FFmpeg",
+        "func": "// FFmpeg Start Command\nmsg.action = {\n    command: 'start',\n    args: [\n        '-i', 'vid1.mp4',\n        '-f', 'image2pipe',\n        '-vcodec', 'mjpeg',\n        '-q:v', '1',                // Highest quality\n        '-vf', 'fps=1,scale=-1:480',  // Consistent frame size\n        '-huffman', 'optimal',       // Better JPEG encoding\n        '-pred', '2',               // Better frame prediction\n        '-analyzeduration', '2147483647',\n        '-probesize', '2147483647',\n        '-'\n    ]\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 200,
+        "wires": [
+            [
+                "bbc56d234fca8d20"
+            ]
+        ]
+    },
+    {
+        "id": "a5883f10aab01815",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "ffmpeg status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "264cc31cc161d0e5",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "kill ffmpeg",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "b85eaf39d92fd577"
+            ]
+        ]
+    },
+    {
+        "id": "b85eaf39d92fd577",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Stop FFmpeg",
+        "func": "msg.action = {\n    command: 'stop',\n    signal: 'SIGTERM'\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 100,
+        "wires": [
+            [
+                "bbc56d234fca8d20"
+            ]
+        ]
+    },
+    {
         "id": "bdf78bf70c72e674",
         "type": "ui_group",
         "name": "Default",
@@ -24,388 +319,5 @@
         "icon": "dashboard",
         "disabled": false,
         "hidden": false
-    },
-    {
-        "id": "e4cca8cd999030e0",
-        "type": "ui_base",
-        "theme": {
-            "name": "theme-light",
-            "lightTheme": {
-                "default": "#0094CE",
-                "baseColor": "#0094CE",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-                "edited": false
-            },
-            "darkTheme": {
-                "default": "#097479",
-                "baseColor": "#097479",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-                "edited": false
-            },
-            "customTheme": {
-                "name": "Untitled Theme 1",
-                "default": "#4B7930",
-                "baseColor": "#4B7930",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-            },
-            "themeState": {
-                "base-color": {
-                    "default": "#0094CE",
-                    "value": "#0094CE",
-                    "edited": false
-                },
-                "page-titlebar-backgroundColor": {
-                    "value": "#0094CE",
-                    "edited": false
-                },
-                "page-backgroundColor": {
-                    "value": "#fafafa",
-                    "edited": false
-                },
-                "page-sidebar-backgroundColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "group-textColor": {
-                    "value": "#1bbfff",
-                    "edited": false
-                },
-                "group-borderColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "group-backgroundColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "widget-textColor": {
-                    "value": "#111111",
-                    "edited": false
-                },
-                "widget-backgroundColor": {
-                    "value": "#0094ce",
-                    "edited": false
-                },
-                "widget-borderColor": {
-                    "value": "#ffffff",
-                    "edited": false
-                },
-                "base-font": {
-                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-                }
-            },
-            "angularTheme": {
-                "primary": "indigo",
-                "accents": "blue",
-                "warn": "red",
-                "background": "grey",
-                "palette": "light"
-            }
-        },
-        "site": {
-            "name": "Node-RED Dashboard",
-            "hideToolbar": "false",
-            "allowSwipe": "false",
-            "lockMenu": "false",
-            "allowTempTheme": "true",
-            "dateFormat": "DD/MM/YYYY",
-            "sizes": {
-                "sx": 48,
-                "sy": 48,
-                "gx": 6,
-                "gy": 6,
-                "cx": 6,
-                "cy": 6,
-                "px": 0,
-                "py": 0
-            }
-        }
-    },
-    {
-        "id": "4c6d5c8b5dedfe1e",
-        "type": "http request",
-        "z": "f6f2187d.f17ca8",
-        "name": "predict obstacle API",
-        "method": "POST",
-        "ret": "obj",
-        "paytoqs": "ignore",
-        "url": "http://localhost:5000/predict",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 680,
-        "y": 240,
-        "wires": [
-            [
-                "ade905f8e53e0cb7"
-            ]
-        ]
-    },
-    {
-        "id": "3a846992bb4c685a",
-        "type": "file in",
-        "z": "f6f2187d.f17ca8",
-        "name": "obstacle image",
-        "filename": "payload",
-        "filenameType": "msg",
-        "format": "",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "utf8",
-        "allProps": false,
-        "x": 240,
-        "y": 240,
-        "wires": [
-            [
-                "a1b5e175fb44a627"
-            ]
-        ]
-    },
-    {
-        "id": "a1b5e175fb44a627",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "convert the img",
-        "func": "msg.headers = {\n    \"Content-Type\": \"multipart/form-data\"\n};\nmsg.payload = {\n    image: {\n        value: Buffer.from(msg.payload, 'base64'), // Pass binary buffer\n        options: {\n            filename: \"image.jpg\",\n            contentType: \"image/jpeg\"\n        }\n    }\n};\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 420,
-        "y": 240,
-        "wires": [
-            [
-                "4c6d5c8b5dedfe1e"
-            ]
-        ]
-    },
-    {
-        "id": "ade905f8e53e0cb7",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "get predicted_class",
-        "func": "let predictedClass = msg.payload.predicted_class;\nmsg.payload = { class: predictedClass };\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 230,
-        "y": 400,
-        "wires": [
-            [
-                "be773dfa3d42a653",
-                "9d97fa8cc51b59f4",
-                "840fd635b9b3efc5"
-            ]
-        ]
-    },
-    {
-        "id": "be773dfa3d42a653",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "debug 5",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload.class",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 620,
-        "y": 340,
-        "wires": []
-    },
-    {
-        "id": "9d97fa8cc51b59f4",
-        "type": "ui_text",
-        "z": "f6f2187d.f17ca8",
-        "group": "bdf78bf70c72e674",
-        "order": 0,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "",
-        "format": "The Predicted Class : '{{msg.payload.class}}'",
-        "layout": "row-center",
-        "className": "",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#000000",
-        "x": 610,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "f6236e0699dc11ac",
-        "type": "ui_audio",
-        "z": "f6f2187d.f17ca8",
-        "name": "play audio",
-        "group": "bdf78bf70c72e674",
-        "voice": "Microsoft David - English (United States)",
-        "always": true,
-        "x": 710,
-        "y": 400,
-        "wires": []
-    },
-    {
-        "id": "f92b1cb01c63abdd",
-        "type": "ui_text_input",
-        "z": "f6f2187d.f17ca8",
-        "name": "img name",
-        "label": "Enter Image Name :",
-        "tooltip": "",
-        "group": "bdf78bf70c72e674",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "passthru": false,
-        "mode": "text",
-        "delay": "0",
-        "topic": "topic",
-        "sendOnBlur": true,
-        "className": "",
-        "topicType": "msg",
-        "x": 80,
-        "y": 240,
-        "wires": [
-            [
-                "3a846992bb4c685a"
-            ]
-        ]
-    },
-    {
-        "id": "840fd635b9b3efc5",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "Process Text",
-        "func": "msg.payload = \"A \" + msg.payload.class + ' Has Been Detected !!';\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 530,
-        "y": 400,
-        "wires": [
-            [
-                "f6236e0699dc11ac"
-            ]
-        ]
-    },
-    {
-        "id": "b0512abec95df7ec",
-        "type": "file in",
-        "z": "f6f2187d.f17ca8",
-        "name": "read video",
-        "filename": "vid1.mp4",
-        "filenameType": "str",
-        "format": "",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 230,
-        "y": 140,
-        "wires": [
-            [
-                "bbc56d234fca8d20"
-            ]
-        ]
-    },
-    {
-        "id": "74e4feb39b0245fb",
-        "type": "inject",
-        "z": "f6f2187d.f17ca8",
-        "name": "Action",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 90,
-        "y": 140,
-        "wires": [
-            [
-                "b0512abec95df7ec"
-            ]
-        ]
-    },
-    {
-        "id": "bbc56d234fca8d20",
-        "type": "ffmpeg",
-        "z": "f6f2187d.f17ca8",
-        "name": "process video",
-        "outputs": 2,
-        "cmdPath": "ffmpeg",
-        "cmdArgs": "[\"-i\",\"pipe:0\",\"-vf\",\"fps=1\",\"-f\",\"image2pipe\",\"pipe:1\"]",
-        "cmdOutputs": 1,
-        "killSignal": "SIGHUP",
-        "x": 400,
-        "y": 140,
-        "wires": [
-            [
-                "a7c20e4fd633e69f"
-            ],
-            [
-                "2d5f4c78373e37b7"
-            ]
-        ]
-    },
-    {
-        "id": "2d5f4c78373e37b7",
-        "type": "function",
-        "z": "f6f2187d.f17ca8",
-        "name": "Convert Frame to Base64",
-        "func": "msg.payload = msg.payload.toString('base64');\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 630,
-        "y": 160,
-        "wires": [
-            [
-                "4c6d5c8b5dedfe1e"
-            ]
-        ]
-    },
-    {
-        "id": "a7c20e4fd633e69f",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "debug 6",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 620,
-        "y": 100,
-        "wires": []
     }
 ]

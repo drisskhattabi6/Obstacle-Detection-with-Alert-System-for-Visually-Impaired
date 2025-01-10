@@ -50,7 +50,7 @@ Ensure you have the following installed on your system:
 - Python 3.8+ with pip (Python package manager)  
 - NPM (package manager) 
 - Node.js and Node-RED  
-- Flask  
+- Python Libraries : Flask, OpenCV, requests, torch, torchvision, pillow
 
 ---
 
@@ -78,35 +78,155 @@ The Flask API serves as the backend for processing images and returning obstacle
 
 ---
 
-### 2. Setting Up and Running Node-RED  
-The Node-RED flow is responsible for integrating the API predictions with the alert system.  
+## 2. Setting Up and Running Node-RED
 
-**Steps:**  
-1. Install Node-RED globally if you haven’t already:  
-   ```bash  
-   npm install -g node-red  
-   ```  
-2. Launch Node-RED:  
-   ```bash  
-   node-red  
-   ```  
-3. Open the Node-RED interface at `http://127.0.0.1:1880`.  
-3. Open the Node-RED dashboard at `http://127.0.0.1:1880/ui`.  
-4. Import the provided Node-RED flow file (`Node-Red-flows.json`) into Node-RED.  
-   - Click on the menu (top-right corner) → "Import" → "Clipboard".  
-   - Paste the content of `Node-Red-flows.json` and deploy the flow.  
-5. Ensure that the Node-RED flow triggers the Flask API and processes responses for the audio alerts.  
+The Node-RED flow is responsible for integrating the API predictions with the alert system.
 
-**⚠️ Warning:** you will need to download some flows from pallet manager in Node-Red
+### **Steps:**
+
+1. **Install Node-RED globally** if you haven’t already:
+
+   ```bash
+   npm install -g node-red
+   ```
+
+2. **Launch Node-RED**:
+
+   ```bash
+   node-red
+   ```
 
 ---
 
-### 3. Running the Alert System  
-The alert system triggers audio notifications based on the API's predictions.  
+### **Download FFmpeg**
 
-1. Verify the Flask API and Node-RED are running.  
-2. Test the system by uploading an obstacle image through the Node-RED dashboard or directly via the API.  
-3. Ensure the audio feedback plays automatically for detected obstacles.  
+FFmpeg is required for processing video and extracting frames. Follow these steps to install FFmpeg on Windows:
+Let's install FFmpeg:
+
+1. **Windows:**
+   - Download FFmpeg from https://www.gyan.dev/ffmpeg/builds/
+   - Get the "ffmpeg-git-full.7z" version
+   - Extract it
+   - Add the `bin` folder to your System PATH:
+     1. Open System Properties → Advanced → Environment Variables
+     2. Under System Variables, find "Path"
+     3. Click Edit → New
+     4. Add the full path to FFmpeg's bin folder (e.g., `C:\ffmpeg\bin`)
+
+2. **Linux:**
+   ```bash
+   sudo apt update
+   sudo apt install ffmpeg
+   ```
+
+3. **Mac:**
+   ```bash
+   brew install ffmpeg
+   ```
+
+After installation:
+1. Restart your computer (to ensure PATH changes take effect)
+2. Restart Node-RED
+
+To verify FFmpeg is installed correctly, open a terminal/command prompt and type:
+   ```bash
+   ffmpeg -version
+   ```
+
+
+---
+
+### 3. Install Node-RED Nodes
+
+You may need to install additional nodes for video processing and object detection. Follow these steps to install the required nodes:
+
+1. In the Node-RED editor, click on the **Menu** (top-right corner) and select **Manage palette**.
+2. Go to the **Install** tab and search for the following nodes, then click **Install**:
+
+   - **node-red-node-ffmpeg**: Provides FFmpeg functionality.
+   - **node-red-contrib-ffmpeg**: Includes FFmpeg-related nodes for video and image handling.
+   - **node-red-node-ui_audio**: For audio output if required.
+
+---
+
+### 4. Import the Flow
+
+1. In the Node-RED editor, click the **Menu** (top-right corner), then select **Import**.
+2. Paste the flow JSON provided and click **Import** to add the flow to your workspace.
+
+---
+
+### 5. Configure FFmpeg Path in Node-RED
+
+Ensure that FFmpeg is correctly configured in your Node-RED flow:
+
+1. If the **ffmpeg** node asks for the FFmpeg path, provide the path where FFmpeg is installed. For example, `C:\ffmpeg\bin\ffmpeg.exe`.
+
+---
+
+### 6. Test the Flow
+
+1. Once everything is set up, click the **Deploy** button to deploy your flow.
+2. Use the **inject node** to input a video or image for processing.
+3. Check the **Debug** tab to view the object detection results and any other outputs.
+
+---
+
+### 7. Open the Node-RED Interface
+
+- Navigate to `http://127.0.0.1:1880` to access the Node-RED editor.
+- Open the Node-RED dashboard at `http://127.0.0.1:1880/ui`.
+
+---
+
+### 8. Import the Flow File
+
+1. Import the provided Node-RED flow file (`Node-Red-flows.json`):
+   - Click on the **Menu** (top-right corner) → **Import** → **Clipboard**.
+   - Paste the content of `Node-Red-flows.json` and click **Deploy**.
+
+---
+
+### 9. Ensure Flask API and Alerts Integration
+
+Ensure that the Node-RED flow triggers the **Flask API** and processes responses for the **audio alerts**.
+
+![Node-Red-flows](imgs/node-red-arch.png)
+
+
+---
+
+this is the content of the flow : 
+
+This is your updated Node-RED flow. Here’s a quick breakdown of how it works:
+
+1. **Inject Image**: The flow begins with an image being injected (`inject image`), which will load an image (`imgs/img1.jpg`) and pass it to the `Load image` node.
+
+2. **Load Image**: This node reads the image file, sending it as a payload to the next function.
+
+3. **Convert the Image**: The `convert the img` function prepares the image by converting it into a `multipart/form-data` format suitable for making an HTTP POST request.
+
+4. **Predict Obstacle**: The image is sent to an HTTP request node (`predict obstacle`) for processing at the endpoint `http://localhost:5000/predict`. The result will be passed to the next function.
+
+5. **Process Prediction**: The result from the prediction (`predicted_class` and `predicted_probability`) is processed to display an appropriate message (e.g., “A 'car' has been detected!!” if the probability is above 0.8, otherwise “No object detected or probability is too low.”).
+
+6. **Audio Output**: If a prediction is made, an audio message (`play audio`) is triggered to read out the detected class.
+
+7. **FFmpeg Video Processing**: The flow includes the `process video` and `Frame Processor` nodes, which handle video frames. The `Start FFmpeg` node triggers FFmpeg to start processing video (`vid1.mp4`), converting frames to images, which are then analyzed for objects.
+
+8. **Debug Nodes**: There are several debug nodes in the flow that allow you to view the output in the sidebar (`predicted class`, `ffmpeg status`), which help with troubleshooting.
+
+9. **Stop FFmpeg**: If needed, the `Stop FFmpeg` node can be triggered to stop FFmpeg from processing the video.
+
+This flow is designed to handle both image and video input, process them with FFmpeg, make predictions via an HTTP request, and output the result as both text and audio. Let me know if you need any adjustments or explanations on specific parts!
+
+### Troubleshooting
+
+- **FFmpeg Issues**: If FFmpeg isn't processing frames correctly, verify that FFmpeg is installed and added to your system’s PATH. You can test FFmpeg by running `ffmpeg -version` in Command Prompt.
+  
+- **Missing Nodes**: If any nodes are missing, you can install them using the Palette Manager in the Node-RED editor.
+
+- **Audio Output Issues**: Ensure the **ui_audio** node is correctly configured for your audio setup and that your system has audio output enabled.
 
 ---
 
@@ -118,8 +238,10 @@ obstacle-detection-alert-system/
 ├── api/  
 │   ├── main.py            # Flask API for predictions 
 │   ├── Fine-Tuned MobileNetV2 model
-├── obstacles detecting for video using Python/  
+├── python obstacle detecting/  # you can test the model on videos or images using Python
 │   ├── predict_video.py     
+│   ├── predict_image.py     
+│   ├── imgs/     
 │   ├── vid1.mp4
 │   ├── vid2.mp4
 │   ├── vid3.mp4
@@ -127,6 +249,16 @@ obstacle-detection-alert-system/
 ├── Research Paper.pdf     # Research Paper
 └── README.md              # Project documentation 
 ```  
+
+## More Informations :
+
+- In 'Python obstacles detecting' Folder you can test the model on videos or images, just run the python code, and make sure that the API is running
+
+For image : 
+![](imgs/predict-img.png)
+
+For Video : 
+![](imgs/predict-vid.png)
 
 ---
 
