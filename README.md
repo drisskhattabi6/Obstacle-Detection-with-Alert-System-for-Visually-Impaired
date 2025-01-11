@@ -3,13 +3,16 @@
 ### Using Deep Learning and Node-RED  
 
 ## Overview  
+
 This project introduces a robust solution to assist visually impaired individuals in navigating their environment using an obstacle detection and alert system. The system combines:  
-- **Deep Learning Models**: A Convolutional Neural Network (CNN) trained from scratch and fine-tuned MobileNetV2 for obstacle classification.  
+
+- **Deep Learning Models**: A Convolutional Neural Network (CNN) trained from scratch and fine-tuned MobileNetV2 for obstacle classification.
 - **Alert System**: Real-time audio feedback using Node-RED, integrated with a Flask API to process predictions.  
 
 **Read The Scientific Paper to know more.**
 
 ## Features  
+
 - Custom-trained deep learning models for obstacle classification.  
 - Real-time alerts through audio guidance for identified obstacles.  
 - Flask API for model prediction and integration with Node-RED for automation.  
@@ -23,6 +26,7 @@ Those some image from the dataset :
 ![](imgs/img2.png)
 
 #### Classes:
+
 1. **Chair**
 2. **Door**
 3. **Fence**
@@ -40,18 +44,16 @@ Class Distribution in Training set :
 Class Distribution in Testing set : 
 ![Class Distribution in Testing set](imgs/testing-hist.png)
 
-
 This is the obstacles dataset used in the project : [Dataset Link](https://www.kaggle.com/datasets/idrisskh/obstacles-dataset/)
 
 ---
 
-## Getting Started  
+### Prerequisites to Getting Started 
 
-### Prerequisites  
 Ensure you have the following installed on your system:  
-- Python 3.8+ with pip (Python package manager)  
-- NPM (package manager) 
-- Node.js and Node-RED  
+- Python 3.8+ with pip (Python package manager)
+- NPM (package manager)
+- Node.js and Node-RED 
 - Python Libraries : Flask, OpenCV, requests, torch, torchvision, pillow
 
 ---
@@ -134,8 +136,6 @@ To verify FFmpeg is installed correctly, open a terminal/command prompt and type
    ```bash
    ffmpeg -version
    ```
-
-
 ---
 
 ### 3. Install Node-RED Nodes
@@ -184,8 +184,13 @@ Ensure that FFmpeg is correctly configured in your Node-RED flow:
 ### 8. Import the Flow File
 
 1. Import the provided Node-RED flow file (`Node-Red-flows.json`):
-   - Click on the **Menu** (top-right corner) → **Import** → **Clipboard**.
-   - Paste the content of `Node-Red-flows.json` and click **Deploy**.
+   - Click on the **Menu** (top-right corner) → **Import**.
+   - choose the json file `Node-Red-flows.json` and click **Deploy**.
+
+
+This is What will appear to you :
+
+![Node-Red-flows](imgs/node-red-arch.png)
 
 ---
 
@@ -193,13 +198,14 @@ Ensure that FFmpeg is correctly configured in your Node-RED flow:
 
 Ensure that the Node-RED flow triggers the **Flask API** and processes responses for the **audio alerts**.
 
-![Node-Red-flows](imgs/node-red-arch.png)
-
+---
 
 **Warning :** 
+
 - Run Node-red in 'python obstacle detecting' Folder to be able to use videos and images, 
 - if you want to change the image to predict, go to inject image node, double click, change the path of the image
 - if you want to change the video to predict, go to Start FFmpeg node, double click, chnage the path of the video : "'-i', 'vid1.mp4'"
+- To run the audio while predicting, the Node-RED dashboard (`http://127.0.0.1:1880/ui`) must be opened, and Item like button must be added to open the dashboard
 
 ---
 
@@ -213,7 +219,7 @@ Ensure that the Node-RED flow triggers the **Flask API** and processes responses
 
 4. **Predict Obstacle**: The image is sent to an HTTP request node (`predict obstacle`) for processing at the endpoint `http://localhost:5000/predict`. The result will be passed to the next function.
 
-5. **Process Prediction**: The result from the prediction (`predicted_class` and `predicted_probability`) is processed to display an appropriate message (e.g., “A 'car' has been detected!!” if the probability is above 0.8, otherwise “No object detected or probability is too low.”).
+5. **Process Prediction**: The result from the prediction (`predicted_class` and `predicted_probability`) is processed to display an appropriate message (e.g., “A 'car' has been detected!!” if the probability is above 0.8, otherwise “probability is low the 0.8”).
 
 6. **Audio Output**: If a prediction is made, an audio message (`play audio`) is triggered to read out the detected class.
 
@@ -223,7 +229,7 @@ Ensure that the Node-RED flow triggers the **Flask API** and processes responses
 
 9. **Stop FFmpeg**: If needed, the `Stop FFmpeg` node can be triggered to stop FFmpeg from processing the video.
 
-This flow is designed to handle both image and video input, process them with FFmpeg, make predictions via an HTTP request, and output the result as both text and audio. Let me know if you need any adjustments or explanations on specific parts!
+This flow is designed to handle both image and video input, process them with FFmpeg, make predictions via an HTTP request, and output the result as both text and audio.
 
 ### Troubleshooting
 
@@ -236,48 +242,50 @@ This flow is designed to handle both image and video input, process them with FF
 ---
 
 ## Project Structure  
+
 ```plaintext  
 obstacle-detection-alert-system/  
 ├── imgs/  
 ├── Obstacles Imgs Example/  
 ├── api/  
-│   ├── main.py            # Flask API for predictions 
+│   ├── main.py                 # Flask API for predictions 
 │   ├── Fine-Tuned MobileNetV2 model
 ├── python obstacle detecting/  # you can test the model on videos or images using Python
-│   ├── predict_video.py     
-│   ├── predict_image.py     
-│   ├── imgs/     
+│   ├── predict_video.py        # script to use the model in video prediction 
+│   ├── predict_image.py        # script to use the model in image prediction 
+│   ├── imgs/                   # use those imgs for prediction
 │   ├── vid1.mp4
 │   ├── vid2.mp4
 │   ├── vid3.mp4
-├── Node-Red-flows.json    # Node-RED flow configuration 
-├── Research Paper.pdf     # Research Paper
-└── README.md              # Project documentation 
+├── Node-Red-flows.json         # Node-RED flow configuration 
+├── Research Paper.pdf          # Research Paper
+└── README.md                   # Project documentation 
 ```  
 
-## More Informations :
+## More Informations:
 
 - In 'Python obstacles detecting' Folder you can test the model on videos or images, just run the python code, and make sure that the API is running
 
-For image : 
+For image: 
 ![](imgs/predict-img.png)
 
-For Video : 
+For Video: 
 ![](imgs/predict-vid.png)
 
 - Notebooks Folder, Contains How I train the CNN from Scratch, and How I Fine-tune MobileNetV2 :
 
-CNN Architucture : 
+CNN Architucture: 
 ![](imgs/CNN-Flowchart.png)
 
-MobileNetV2 Architucture  : 
+MobileNetV2 Architucture: 
 ![](imgs/image-150.webp)
 
 - To run the audio while predicting, the Node-RED dashboard (`http://127.0.0.1:1880/ui`) must be opened, and Item like button must be added to open the dashboard
 
 ---
 
-## References  
+## References :
+
 1. Mark Sandler Andrew Howard Menglong Zhu Andrey Zhmoginov Liang-Chieh Chen. MobileNetV2: Inverted Residuals and Linear Bottlenecks. Google Inc
 2. Yahia Said, Mohamed Atri, Marwan Ali Albahar, Ahmed Ben Atitallah and Yazan Ahmad Alsariera: Obstacle Detection System for Navigation Assistance of Visually Impaired People Based on Deep Learning Techniques
 3. O’Shea, Keiron, and Ryan Nash. An Introduction to Convolutional Neural Networks. arXiv preprint arXiv:1511.08458, 2015.
@@ -291,11 +299,12 @@ MobileNetV2 Architucture  :
 ---
 
 ## Realized by: 
+
 - **Khattabi Idriss**
 - **Boufarhi Ayman**
 
 Under the supervision of **Mr. Faouzi TAYALATI**
 
-This was a *Deep Learning and Transfer Learning* Module Project - Master of AI and Data Sceince 
+This was a **Deep Learning and Transfer Learning** Module Project - Master of AI and Data Sceince.
 
 FST Tanger - Morocco
