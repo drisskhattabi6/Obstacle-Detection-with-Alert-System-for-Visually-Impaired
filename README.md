@@ -22,7 +22,9 @@ This project introduces a robust solution to assist visually impaired individual
 The dataset is a **custom-built collection** created by merging several publicly available datasets and scraping additional images of common obstacles to ensure comprehensive coverage of real-world scenarios. It includes **10 distinct classes**, each representing a type of obstacle frequently encountered by visually impaired individuals. 
 
 Those some image from the dataset : 
+
 ![](imgs/img1.png)
+
 ![](imgs/img2.png)
 
 #### Classes:
@@ -39,9 +41,11 @@ Those some image from the dataset :
 10. **Vehicle**
 
 Class Distribution in Training set : 
+
 ![Class Distribution in Training set](imgs/training-hist.png)
 
 Class Distribution in Testing set : 
+
 ![Class Distribution in Testing set](imgs/testing-hist.png)
 
 This is the obstacles dataset used in the project : [Dataset Link](https://www.kaggle.com/datasets/idrisskh/obstacles-dataset/)
@@ -145,20 +149,12 @@ You may need to install additional nodes for video processing and object detecti
 1. In the Node-RED editor, click on the **Menu** (top-right corner) and select **Manage palette**.
 2. Go to the **Install** tab and search for the following nodes, then click **Install**:
 
-   - **node-red-node-ffmpeg**: Provides FFmpeg functionality.
-   - **node-red-contrib-ffmpeg**: Includes FFmpeg-related nodes for video and image handling.
-   - **node-red-node-ui_audio**: For audio output if required.
+   - **node-red-ffmpeg**: Provides FFmpeg functionality.
+   - **node-red-dashboard**: For audio output.
 
 ---
 
-### 4. Import the Flow
-
-1. In the Node-RED editor, click the **Menu** (top-right corner), then select **Import**.
-2. Paste the flow JSON provided and click **Import** to add the flow to your workspace.
-
----
-
-### 5. Configure FFmpeg Path in Node-RED
+### 4. Configure FFmpeg Path in Node-RED
 
 Ensure that FFmpeg is correctly configured in your Node-RED flow:
 
@@ -166,7 +162,7 @@ Ensure that FFmpeg is correctly configured in your Node-RED flow:
 
 ---
 
-### 6. Test the Flow
+### 5. Test the Flow
 
 1. Once everything is set up, click the **Deploy** button to deploy your flow.
 2. Use the **inject node** to input a video or image for processing.
@@ -174,14 +170,14 @@ Ensure that FFmpeg is correctly configured in your Node-RED flow:
 
 ---
 
-### 7. Open the Node-RED Interface
+### 6. Open the Node-RED Interface
 
 - Navigate to `http://127.0.0.1:1880` to access the Node-RED editor.
 - Open the Node-RED dashboard at `http://127.0.0.1:1880/ui`.
 
 ---
 
-### 8. Import the Flow File
+### 7. Import the Flow File
 
 1. Import the provided Node-RED flow file (`Node-Red-flows.json`):
    - Click on the **Menu** (top-right corner) → **Import**.
@@ -194,7 +190,7 @@ This is What will appear to you :
 
 ---
 
-### 9. Ensure Flask API and Alerts Integration
+### 8. Ensure Flask API and Alerts Integration
 
 Ensure that the Node-RED flow triggers the **Flask API** and processes responses for the **audio alerts**.
 
@@ -267,17 +263,21 @@ obstacle-detection-alert-system/
 - In 'Python obstacles detecting' Folder you can test the model on videos or images, just run the python code, and make sure that the API is running
 
 For image: 
+
 ![](imgs/predict-img.png)
 
 For Video: 
+
 ![](imgs/predict-vid.png)
 
 - Notebooks Folder, Contains How I train the CNN from Scratch, and How I Fine-tune MobileNetV2 :
 
 CNN Architucture: 
+
 ![](imgs/CNN-Flowchart.png)
 
 MobileNetV2 Architucture: 
+
 ![](imgs/image-150.webp)
 
 - To run the audio while predicting, the Node-RED dashboard (`http://127.0.0.1:1880/ui`) must be opened, and Item like button must be added to open the dashboard
